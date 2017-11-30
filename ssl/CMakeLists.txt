@@ -36,8 +36,12 @@ set ( LIBSRC s2_meth.c s2_srvr.c s2_clnt.c s2_lib.c s2_enc.c s2_pkt.c s3_meth.c 
 
 if(BUILD_OBJECT_LIBRARY_ONLY)
   set( LIBHDR ssl.h kssl.h ssl2.h ssl3.h tls1.h dtls1.h ssl23.h srtp.h)
-  file( COPY ${LIBHDR} DESTINATION openssl )
+  file( COPY ${LIBHDR} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../include/ssl/openssl/)
   add_library( ssl OBJECT ${LIBSRC} ${LIBHDR} )
+  target_include_directories(ssl PUBLIC ${CMAKE_SOURCE_DIR}/crypto)
+  target_include_directories(ssl PUBLIC ${CMAKE_SOURCE_DIR}/include)
+  target_include_directories(ssl PUBLIC ${CMAKE_SOURCE_DIR}/include/ssl)
+  target_include_directories(ssl PUBLIC ${CMAKE_SOURCE_DIR}/include/crypto)
 else()
   add_library( ssl ${LIBSRC} )
   target_link_libraries( ssl crypto )

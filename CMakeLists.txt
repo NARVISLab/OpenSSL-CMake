@@ -29,8 +29,6 @@ cmake_minimum_required( VERSION 2.8.3 )
 
 set(BUILD_OBJECT_LIBRARY_ONLY OFF BOOL)
 
-include_directories ( BEFORE SYSTEM ${CMAKE_CURRENT_BINARY_DIR}/crypto ${CMAKE_CURRENT_BINARY_DIR}/ssl crypto . )
-
 add_definitions( -DOPENSSL_NO_ASM )
 
 if( WIN32 AND NOT CYGWIN )
@@ -45,7 +43,8 @@ endif()
 add_subdirectory( crypto )
 add_subdirectory( ssl )
 if( BUILD_OBJECT_LIBRARY_ONLY)
-  file( COPY e_os2.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
+  file( COPY e_os2.h DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/openssl/)
+  file( COPY e_os.h DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 else()
   add_subdirectory( apps )
 

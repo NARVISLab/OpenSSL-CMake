@@ -41,20 +41,18 @@ set( CONF "
 #define OPENSSL_NO_SCTP
 #define OPENSSL_NO_EC_NISTP_64_GCC_128
 ${CONF}" )
-file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/opensslconf.h.cmake "${CONF}" )
+file( WRITE ${CMAKE_CURRENT_SOURCE_DIR}/../include/crypto/opensslconf.h.cmake "${CONF}" )
 
 #~2DO: set BUILDINF_DATE to `date LC_ALL=C LC_TIME=C`
-configure_file( buildinf.h.cmake buildinf.h )
+configure_file( buildinf.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/../include/crypto/buildinf.h )
 
 if( WIN32 AND MINGW AND NOT CYGWIN )
   set( OPENSSL_EXPORT_VAR_AS_FUNCTION true )
 endif()
-configure_file( ${CMAKE_CURRENT_BINARY_DIR}/opensslconf.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/openssl/opensslconf.h )
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../include/crypto/opensslconf.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/../include/crypto/openssl/opensslconf.h )
 
 set( LIBSRC cryptlib.c mem.c mem_clr.c mem_dbg.c cversion.c ex_data.c cpt_err.c
   ebcdic.c uid.c o_time.c o_str.c o_dir.c o_init.c )
-
-include_directories( BEFORE SYSTEM asn1 evp modes )
 
 if( BUILD_SHARED_LIBS )
   add_definitions( -DOPENSSL_BUILD_SHLIBCRYPTO )
@@ -224,7 +222,11 @@ if(BUILD_OBJECT_LIBRARY_ONLY)
   add_library( crypto OBJECT ${LIBSRC} ${OBJECTS_SRC} )
   set( crypto_headers ${EXHEADERS} )
   list( REMOVE_ITEM crypto_headers ./opensslconf.h )
-  file( COPY ${crypto_headers} DESTINATION openssl )
+  file( COPY ${crypto_headers} DESTINATION ${CMAKE_SOURCE_DIR}/include/crypto/openssl/)
+  target_include_directories(crypto PUBLIC ${CMAKE_SOURCE_DIR}/crypto)
+  target_include_directories(crypto PUBLIC ${CMAKE_SOURCE_DIR}/include)
+  target_include_directories(crypto PUBLIC ${CMAKE_SOURCE_DIR}/include/crypto)
+  target_include_directories(crypto PUBLIC asn1 evp modes)
 else()
   add_library( crypto ${LIBSRC} ${OBJECTS_SRC} )
 
